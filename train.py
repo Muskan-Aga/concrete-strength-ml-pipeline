@@ -8,20 +8,22 @@ import joblib
 import json
 import sys
 
-DATA_URL = "https://raw.githubusercontent.com/Morcu/Concrete_compressive_strength/master/cemento.csv"
+DATA_URL = "https://huggingface.co/spaces/sparsh007/ConcreteStrengthPrediction/raw/main/concrete_data.csv"
 
 EXPECTED_COLUMNS = [
-    "Cement", "Blast Furnace Slag", "Fly Ash", "Water",
-    "Superplasticizer", "Coarse Aggregate", "Fine Aggregate",
-    "Age", "Concrete compressive strength"
+    "cement", "blast_furnace_slag", "fly_ash", "water",
+    "superplasticizer", "coarse_aggregate", "fine_aggregate",
+    "age", "concrete_compressive_strength"
 ]
 
 def load_and_validate_data():
     df = pd.read_csv(DATA_URL)
+    df.columns = [c.strip() for c in df.columns]
 
     missing_cols = [col for col in EXPECTED_COLUMNS if col not in df.columns]
     if missing_cols:
         print(f"ERROR: Missing expected columns: {missing_cols}")
+        print(f"Actual columns found: {list(df.columns)}")
         sys.exit(1)
 
     print("Data validation passed. Columns present:", list(df.columns))
@@ -30,7 +32,7 @@ def load_and_validate_data():
 def main():
     df = load_and_validate_data()
 
-    target_col = "Concrete compressive strength"
+    target_col = "concrete_compressive_strength"
     feature_cols = [c for c in df.columns if c != target_col]
 
     X = df[feature_cols]
@@ -40,13 +42,11 @@ def main():
         X, y, test_size=0.2, random_state=42
     )
 
-    # Baseline model
     baseline = DummyRegressor(strategy="mean")
     baseline.fit(X_train, y_train)
     baseline_preds = baseline.predict(X_test)
     baseline_mae = mean_absolute_error(y_test, baseline_preds)
 
-    # Candidate model
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
     model_preds = model.predict(X_test)
@@ -55,12 +55,10 @@ def main():
     print(f"Baseline MAE: {baseline_mae:.4f}")
     print(f"Model MAE: {model_mae:.4f}")
 
-    # Save models
     joblib.dump(model, "model.pkl")
     joblib.dump(feature_cols, "feature_columns.pkl")
 
-    # Save metrics report
-    margin = 2.0  # MPa improvement margin required over baseline
+    margin = 2.0
     metrics = {
         "baseline_mae": baseline_mae,
         "model_mae": model_mae,
