@@ -11,14 +11,14 @@ def test_model_can_be_loaded():
 def test_valid_sample_produces_expected_output():
     """A valid sample produces a numeric prediction of expected type."""
     sample_input = {
-        "Cement": 540.0,
-        "Blast Furnace Slag": 0.0,
-        "Fly Ash": 0.0,
-        "Water": 162.0,
-        "Superplasticizer": 2.5,
-        "Coarse Aggregate": 1040.0,
-        "Fine Aggregate": 676.0,
-        "Age": 28
+        "cement": 540.0,
+        "blast_furnace_slag": 0.0,
+        "fly_ash": 0.0,
+        "water": 162.0,
+        "superplasticizer": 2.5,
+        "coarse_aggregate": 1040.0,
+        "fine_aggregate": 676.0,
+        "age": 28
     }
     result = predict(sample_input)
     assert isinstance(result, float)
@@ -27,11 +27,11 @@ def test_valid_sample_produces_expected_output():
 def test_missing_feature_is_rejected():
     """An input missing a required feature raises a clear error."""
     incomplete_input = {
-        "Cement": 540.0,
-        "Blast Furnace Slag": 0.0,
-        "Fly Ash": 0.0,
-        "Water": 162.0,
-        # Missing: Superplasticizer, Coarse Aggregate, Fine Aggregate, Age
+        "cement": 540.0,
+        "blast_furnace_slag": 0.0,
+        "fly_ash": 0.0,
+        "water": 162.0,
+        # Missing: superplasticizer, coarse_aggregate, fine_aggregate, age
     }
     with pytest.raises(ValueError, match="Missing required feature"):
         predict(incomplete_input)
