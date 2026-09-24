@@ -47,7 +47,7 @@ def main():
     baseline_preds = baseline.predict(X_test)
     baseline_mae = mean_absolute_error(y_test, baseline_preds)
 
- model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
     model_preds = model.predict(X_test)
     model_mae = mean_absolute_error(y_test, model_preds)
