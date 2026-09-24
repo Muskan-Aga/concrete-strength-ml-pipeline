@@ -26,7 +26,7 @@ def predict(input_dict):
     """
     model, feature_cols = load_model()
 
-    missing = [col for col in feature_cols if col not in input_dict]
+       missing = []  # BUG: disabled missing-feature check
     if missing:
         raise ValueError(f"Missing required feature(s): {missing}")
 
