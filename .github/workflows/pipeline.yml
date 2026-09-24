@@ -1,0 +1,41 @@
+name: ML Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  train-evaluate-test-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train baseline and candidate model
+        run: python train.py
+
+      - name: Evaluate against quality gate
+        run: python evaluate.py
+
+      - name: Run application tests
+        run: pytest test_pipeline.py -v
+
+      - name: Upload model package
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-package-${{ github.run_number }}
+          path: |
+            model.pkl
+            feature_columns.pkl
+            metrics.json
+            predict.py
+            requirements.txt
